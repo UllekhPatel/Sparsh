@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const terrainGroup = new THREE.Group();
     scene.add(terrainGroup);
 
-    const groundGeo = new THREE.PlaneGeometry(200, 200, 80, 80);
+    const groundGeo = new THREE.PlaneGeometry(1000, 1000, 150, 150);
     groundGeo.rotateX(-Math.PI / 2);
     const verts = groundGeo.attributes.position.array;
     for (let i = 0; i < verts.length; i += 3) {
@@ -673,22 +673,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // JCB drives in
     tl.to(jcbGroup.position, { x: -5, duration: 0.12, ease: "power2.out" }, 0.18);
 
-    // --- PHASE 3: GREENING & KAVACH (30% – 45%) ---
-    // TERRAIN TURNS GREEN — barren desert transforms to lush green
-    tl.to(earthColor, {
-        r: 0.35, g: 0.55, b: 0.25,
-        duration: 0.12
-    }, 0.30);
-    // Grass and bushes rise into view
+    // --- PHASE 3: KAVACH (30% – 45%) ---
+    // Grass and bushes rise into view early as construction begins
     tl.to(greeneryGroup.position, { y: 0, duration: 0.12, ease: "power2.out" }, 0.30);
-    // Sky shifts to cooler blue-green
-    tl.to(clearColor, {
-        r: 0.45, g: 0.55, b: 0.50,
-        duration: 0.12,
-        onUpdate: () => renderer.setClearColor(new THREE.Color(clearColor.r, clearColor.g, clearColor.b), 1)
-    }, 0.30);
-    tl.to('body', { backgroundColor: '#738E80', duration: 0.10 }, 0.30);
-
+    
     // Shield rises
     tl.to(AssemblyGroup.position, { y: 5, duration: 0.10, ease: "power2.out" }, 0.35);
     tl.to('.kavach-shield-title', { opacity: 1, scale: 1, duration: 0.06 }, 0.42);
@@ -714,32 +702,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ZOOM OUT TO FULL CITY AERIAL — reveal the entire built city
     tl.to(camera.position, { x: 0, y: 80, z: 90, duration: 0.12, ease: "power2.inOut" }, 0.72);
+    
+    // ENTIRE LAND TURNS GREEN
+    tl.to(earthColor, { r: 0.35, g: 0.55, b: 0.25, duration: 0.12 }, 0.72);
+    tl.to(MATS.rock.color, { r: 0.30, g: 0.50, b: 0.20, duration: 0.12 }, 0.72);
+    tl.to(MATS.mound.color, { r: 0.35, g: 0.55, b: 0.25, duration: 0.12 }, 0.72);
+    // Sky shifts to cooler blue-green
+    tl.to(clearColor, {
+        r: 0.45, g: 0.55, b: 0.50,
+        duration: 0.12,
+        onUpdate: () => renderer.setClearColor(new THREE.Color(clearColor.r, clearColor.g, clearColor.b), 1)
+    }, 0.72);
+    tl.to('body', { backgroundColor: '#738E80', duration: 0.10 }, 0.72);
+    // Fog transitions to blue-green as well to perfectly blend the horizon so there are no black borders
+    tl.to(scene.fog.color, { r: 0.45, g: 0.55, b: 0.50, duration: 0.12 }, 0.72);
+    
     // All services visible for the aerial shot
     tl.to('.service-item', { opacity: 1, duration: 0.04 }, 0.72);
     // Corporate intel
     tl.to('.corporate-intel', { y: 0, opacity: 0.9, duration: 0.06 }, 0.74);
 
-    // --- PHASE 5: OBSIDIAN VOID & LASER (78% – 100%) ---
+    // --- PHASE 5: GRAND FINALE OVERLAY (78% – 100%) ---
+    // Hide service text but keep the green city as the background
     tl.to('.service-item, .corporate-intel', { opacity: 0, duration: 0.03 }, 0.80);
     tl.to('.phase-4-services', { opacity: 0, duration: 0.01 }, 0.80);
 
-    // Everything sinks into the void
-    tl.to(societyGroup.position, { y: -40, duration: 0.10, ease: "power2.in" }, 0.80);
-    tl.to(terrainGroup.position, { y: -40, duration: 0.10, ease: "power2.in" }, 0.80);
-
-    // Obsidian transition
-    tl.to(clearColor, {
-        r: 0.05, g: 0.07, b: 0.09,
-        duration: 0.08,
-        onUpdate: () => renderer.setClearColor(new THREE.Color(clearColor.r, clearColor.g, clearColor.b), 1)
-    }, 0.82);
-    tl.to('body', { backgroundColor: '#0d1217', duration: 0.08 }, 0.82);
-
-    // Sanskrit laser etch
-    tl.to('.sanskrit-engraved', { opacity: 1, duration: 0.01 }, 0.90);
-    tl.to(laserLight, { intensity: 15, duration: 0.04 }, 0.90);
-    tl.to(laserLight.position, { x: 20, ease: "none", duration: 0.12 }, 0.90);
-    tl.to('.sanskrit-engraved', { clipPath: "inset(0 0% 0 0)", ease: "none", duration: 0.12 }, 0.90);
-    tl.to(laserLight, { intensity: 0, duration: 0.04 }, 1.0);
-    tl.to('.translation-fade', { opacity: 1, duration: 0.08 }, 0.96);
+    // Sanskrit laser etch (overlaid onto the full green city)
+    tl.to('.sanskrit-engraved', { opacity: 1, duration: 0.01 }, 0.85);
+    tl.to(laserLight, { intensity: 15, duration: 0.04 }, 0.85);
+    tl.to(laserLight.position, { x: 20, ease: "none", duration: 0.12 }, 0.85);
+    tl.to('.sanskrit-engraved', { clipPath: "inset(0 0% 0 0)", ease: "none", duration: 0.12 }, 0.85);
+    tl.to(laserLight, { intensity: 0, duration: 0.04 }, 0.95);
+    tl.to('.translation-fade', { opacity: 1, duration: 0.08 }, 0.90);
 });

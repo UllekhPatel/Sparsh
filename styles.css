@@ -185,11 +185,13 @@ body { background-color: #D4B896; color: var(--text-dark); font-family: var(--fo
     .massive-hero-text { font-size: 18vw; padding: 0 1rem; }
     .kavach-shield-title { font-size: 15vw; }
     
-    .sanskrit-engraved { font-size: 12vw; }
-    .translation-fade { font-size: 3.5vw; text-align: center; padding: 0 1rem; }
-    
-    .corporate-intel { font-size: 3vw; max-width: 90%; margin-top: 3rem; text-align: left; }
+    .phase-4-services { padding-left: 5vw; gap: 1rem; }
+    .service-item { font-size: 6vw; white-space: normal; line-height: 1.4; }
+    .corporate-intel { font-size: 3.5vw; max-width: 90%; margin-top: 3rem; text-align: left; line-height: 1.5; }
 
+    .sanskrit-engraved { font-size: 12vw; }
+    .translation-fade { font-size: 4vw; text-align: center; padding: 0 1rem; }
+    
     .footer-content { flex-direction: column; gap: 4rem; }
     .contact-header { font-size: 3rem; margin-bottom: 1rem; }
     .contact-grid { flex-direction: column; gap: 2rem; }
