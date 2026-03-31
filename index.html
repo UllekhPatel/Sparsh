@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sparsh Utpal Patel | Phase 2 Interaction</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700;900&family=Noto+Sans+Devanagari:wght@800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- SVG Definitions for Motion Blur -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <defs>
+            <filter id="motion-blur">
+                <feGaussianBlur id="blur-filter" in="SourceGraphic" stdDeviation="0,0" />
+            </filter>
+        </defs>
+    </svg>
+</head>
+<body>
+    <!-- Surveyor's Custom Cursor -->
+    <div id="custom-cursor">
+        <div class="line horizontal"></div>
+        <div class="line vertical"></div>
+    </div>
+
+    <!-- WebGL Canvas Background -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Global Noise Overlay -->
+    <div class="noise-overlay"></div>
+
+    <nav class="top-bar">
+        <div class="brand interactive">SUP.</div>
+        <div class="nav-right">
+            <span class="coord-hover interactive" data-coord="23.0225° N, 72.5714° E">Ahmedabad Base</span>
+            <a href="#contact" class="btn-login interactive">CONTACT</a>
+        </div>
+    </nav>
+
+    <!-- Lenis Smooth Scroll Wrapper -->
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+            
+            <!-- 1. HERO SECTION -->
+            <section class="section-hero">
+                <div class="hero-content">
+                    <!-- We split the word itself physically or via SplitType,
+                         but the prompt specifies specific translation directions.
+                         If using SplitType on a single word horizontally... SplitType slices by char/word/line. 
+                         To slice a word *horizontally*, we must use CSS clip-path on duplicates. -->
+                    <div class="kinetic-text-wrap">
+                        <div class="sparsh-slice slice-top"><span class="blur-target">SPARSH</span></div>
+                        <div class="sparsh-slice slice-bottom"><span class="blur-target">SPARSH</span></div>
+                        <div class="rest-of-name">UTPAL PATEL</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. SCROLL TRIGGER SPACER (Kinetic Translation) -->
+            <section class="section-kinetic-spacer"></section>
+
+            <!-- 3. KAVACH LOCK-IN -->
+            <section class="section-kavach">
+                <div class="kavach-content">
+                    <!-- Masking tape reveal setup -->
+                    <div class="mask-wrap"><h2 class="kavach-title">KAVACH</h2></div>
+                    <div class="mask-wrap"><h2 class="kavach-title">INFRACON</h2></div>
+                    <div class="mask-wrap"><h2 class="kavach-title">PVT. LTD.</h2></div>
+                    
+                    <h3 class="kavach-subtitle interactive-trigger decoding-text">
+                        EQUIPMENT LEASING | MATERIAL SUPPLY | AHMEDABAD
+                    </h3>
+                </div>
+
+                <!-- 4. BLUEPRINT EXPANSION (Hover Reveal Layer) -->
+                <div class="blueprint-overlay">
+                    <div class="grid-lines"></div>
+                    <div class="node node-1 interactive" data-info="Rental Fleet: 45 Excavators"></div>
+                    <div class="node node-2 interactive" data-info="Supply Output: 10K+ Tons Sand/mo"></div>
+                    <div class="node node-3 interactive" data-info="Logistics Fleet: 20 Tippers"></div>
+                    
+                    <!-- Glassmorphism Data Card -->
+                    <div class="data-card">
+                        <p class="data-content"></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. THE CULTURAL ANCHOR -->
+            <section class="section-anchor" id="contact">
+                <div class="anchor-content-grid">
+                    <div class="bio-grid-col">
+                        <p class="monospace-bio">
+                            > SYSTEM.INIT("SPARSH_BIO")
+                            <br>> EXPERTISE: CIVIL ENGINEERING
+                            <br>> FOCUS: INFRASTRUCTURE ENTREPRENEURSHIP
+                            <br>> LOCATION: GUJARAT, INDIA
+                            <br>> STATUS: BUILDING ROBUST FOUNDATIONS
+                        </p>
+                    </div>
+                    
+                    <div class="contact-grid-col">
+                        <p class="monospace-bio">> CONTACT: +91 8043808391<br>> GSTIN: 24AAGCK7814F1ZM</p>
+                    </div>
+                </div>
+
+                <!-- Deeply Engraved Sanskrit -->
+                <div class="cultural-anchor">
+                    <h1 class="sanskrit-engraved">नैवं छिन्दन्ति शस्त्राणि</h1>
+                    <p class="translation-fade">WEAPONS CANNOT CUT IT | ULTIMATE RESILIENCE</p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- CDNs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    <!-- We will use SplitType if needed for char splits, but masking tape might suffice with custom CSS wrappers -->
+    <script src="https://unpkg.com/split-type"></script>
+    <script src="script.js"></script>
+</body>
+</html>
