@@ -141,8 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollTrigger: {
             trigger: ".scroll-pin-container",
             start: "top top",
-            endTrigger: ".cinematic-spacer",
-            end: "bottom bottom",
+            end: "+=4000",
             scrub: 1.5,
             pin: true,
             onUpdate: self => { timelineProgress = self.progress; }
@@ -229,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Synchronize CSS clip-path to visually 'etch/reveal' the text as the laser passes it!
     tl.to('.sanskrit-engraved', {
-        clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+        clipPath: "inset(0 0% 0 0)",
         ease: "none",
         duration: 0.2
     }, 0.8);

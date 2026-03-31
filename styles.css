@@ -37,11 +37,6 @@ body { background-color: transparent; color: var(--text-dark); font-family: var(
     position: relative;
 }
 
-.cinematic-spacer {
-    height: 500vh; /* Timeline scroll distance */
-    pointer-events: none;
-}
-
 /* Phase Wrappers */
 .phase {
     position: absolute;
@@ -81,10 +76,10 @@ body { background-color: transparent; color: var(--text-dark); font-family: var(
     font-size: 6vw;
     font-weight: 800;
     line-height: 1;
-    color: var(--obsidian);
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(255,255,255,0.05), inset 2px 2px 4px rgba(0,0,0,0.8);
+    color: #1a222c; /* Slightly embossed against the obsidian background */
+    text-shadow: -1px -1px 1px rgba(255,255,255,0.1), 3px 3px 5px rgba(0,0,0,0.8);
     opacity: 0; /* Managed by GSAP */
-    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); /* Start hidden from left-to-right wipe */
+    clip-path: inset(0 100% 0 0); /* Start hidden from left-to-right wipe */
 }
 
 .translation-fade {
@@ -95,4 +90,67 @@ body { background-color: transparent; color: var(--text-dark); font-family: var(
     margin-top: 2rem;
     opacity: 0;
     text-shadow: 0 0 10px rgba(249, 115, 22, 0.8);
+}
+
+/* Footer Block */
+.footer-block {
+    position: relative;
+    z-index: 50;
+    background: var(--obsidian);
+    color: var(--text-light);
+    padding: 6rem 3rem 6rem;
+    border-top: 1px solid rgba(255, 94, 0, 0.3);
+}
+.footer-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 4rem; }
+.footer-info { flex: 1; min-width: 300px; }
+.contact-header { font-family: var(--font-heading); font-size: 5rem; line-height: 1; letter-spacing: -2px; margin-bottom: 2rem; }
+.contact-grid { display: flex; gap: 4rem; flex-wrap: wrap; }
+.contact-col { flex: 1; min-width: 200px; }
+.contact-col p { font-family: var(--font-mono); font-size: 1rem; line-height: 1.5; margin-bottom: 0.5rem; }
+.contact-col .label { font-family: var(--font-body); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--safety-orange); font-weight: 700; margin-bottom: 1rem; }
+.mt-1 { margin-top: 1.5rem; }
+
+/* Contact Form UI */
+.contact-form-container { flex: 1; min-width: 300px; width: 100%; max-width: 500px; }
+.contact-form { display: flex; flex-direction: column; gap: 1rem; }
+.contact-form input, .contact-form textarea {
+    background: rgba(26, 34, 44, 0.4);
+    border: 1px solid rgba(255, 94, 0, 0.3);
+    color: var(--text-light);
+    font-family: var(--font-mono);
+    padding: 1.25rem;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.contact-form input:focus, .contact-form textarea:focus { border-color: var(--safety-orange); box-shadow: 0 0 10px rgba(255,94,0,0.1); background: rgba(26, 34, 44, 1); }
+.contact-form input::placeholder, .contact-form textarea::placeholder { color: rgba(247, 250, 252, 0.5); }
+.btn-submit {
+    background: var(--safety-orange);
+    color: var(--obsidian);
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    padding: 1rem;
+    border: none;
+    text-transform: uppercase;
+    transition: all 0.3s;
+}
+.btn-submit:hover { background: var(--text-light); color: var(--obsidian); transform: translateY(-2px); }
+
+/* Responsive Constraints */
+@media (max-width: 768px) {
+    #custom-cursor { display: none; } /* Hide surveyor cursor on touch screens */
+    .top-bar { padding: 1.5rem; flex-direction: column; gap: 1rem; align-items: flex-start;}
+    .nav-right { gap: 1rem; flex-wrap: wrap;}
+    
+    .massive-hero-text { font-size: 18vw; padding: 0 1rem; }
+    .kavach-shield-title { font-size: 15vw; }
+    
+    .sanskrit-engraved { font-size: 12vw; }
+    .translation-fade { font-size: 3.5vw; text-align: center; padding: 0 1rem; }
+    
+    .footer-content { flex-direction: column; gap: 4rem; }
+    .contact-header { font-size: 3rem; margin-bottom: 1rem; }
+    .contact-grid { flex-direction: column; gap: 2rem; }
+    .contact-form-container { width: 100%; max-width: 100%; padding-left: 0; }
 }
