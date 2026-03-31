@@ -71,6 +71,27 @@ body { background-color: transparent; color: var(--text-dark); font-family: var(
 }
 
 /* Phase 4 */
+.phase-4-services {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding-left: 10vw;
+    gap: 2rem;
+}
+
+.service-item {
+    font-family: var(--font-mono);
+    font-size: 3vw;
+    color: var(--safety-orange);
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    opacity: 0; /* GSAP Stagger trigger */
+    transform: translateX(-50px);
+    text-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+}
+
+/* Phase 5 */
 .sanskrit-engraved {
     font-family: var(--font-sanskrit);
     font-size: 6vw;

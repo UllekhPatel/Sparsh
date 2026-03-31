@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollTrigger: {
             trigger: ".scroll-pin-container",
             start: "top top",
-            end: "+=4000",
+            end: "+=6000",
             scrub: 1.5,
             pin: true,
             onUpdate: self => { timelineProgress = self.progress; }
@@ -208,30 +208,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 0.6);
 
 
-    // === PHASE 4: The Anchor Laser (75% - 100%) ===
-    // Fade Kavach shield back slightly
-    tl.to('.kavach-shield-title', { opacity: 0.2, duration: 0.1 }, 0.8);
-    tl.to(AssemblyGroup.position, { y: 15, duration: 0.2, ease: "power2.inOut" }, 0.8);
+    // === PHASE 4: The Services Arsenal (60% - 75%) ===
+    // Push Kavach shield deep back into Z-space giving visual room
+    tl.to(AssemblyGroup.position, { z: -40, duration: 0.15, ease: "power2.inOut" }, 0.65);
+    tl.to('.kavach-shield-title', { scale: 0.5, opacity: 0.05, duration: 0.15 }, 0.65);
+
+    // Stagger in the verified services readout like a HUD scan
+    tl.to('.service-item', {
+        x: 0,
+        opacity: 1,
+        duration: 0.1,
+        stagger: 0.05,
+        ease: "power2.out"
+    }, 0.65);
+
+    // Fade services out before the laser sweep
+    tl.to('.service-item', { x: 50, opacity: 0, duration: 0.1, stagger: 0.02, ease: "power2.in" }, 0.78);
+
+
+    // === PHASE 5: The Anchor Laser (80% - 100%) ===
+    // Push the shield further out of the way vertically
+    tl.to(AssemblyGroup.position, { y: 25, duration: 0.2, ease: "power2.inOut" }, 0.82);
 
     // Reveal Anchor text wrapper DOM
-    tl.to('.sanskrit-engraved', { opacity: 1, duration: 0.01 }, 0.8);
+    tl.to('.sanskrit-engraved', { opacity: 1, duration: 0.01 }, 0.82);
 
     // Ignite the PointLight Laser
-    tl.to(laserLight, { intensity: 15, duration: 0.05 }, 0.8);
+    tl.to(laserLight, { intensity: 15, duration: 0.05 }, 0.82);
 
     // Sweep laser light geometrically from Left to Right
     tl.to(laserLight.position, {
         x: 20, // Sweep past 0
         ease: "none",
         duration: 0.2
-    }, 0.8);
+    }, 0.82);
 
     // Synchronize CSS clip-path to visually 'etch/reveal' the text as the laser passes it!
     tl.to('.sanskrit-engraved', {
         clipPath: "inset(0 0% 0 0)",
         ease: "none",
         duration: 0.2
-    }, 0.8);
+    }, 0.82);
 
     // After laser scan, kill laser light, fade in translation text under it safely
     tl.to(laserLight, { intensity: 0, duration: 0.05 }, 1.0);
