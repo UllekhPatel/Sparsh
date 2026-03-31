@@ -1,95 +1,133 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. SYSTEM INITIALIZATIONS
-    gsap.registerPlugin(ScrollTrigger, TextPlugin);
+    // 1. SYSTEM INIT
+    gsap.registerPlugin(ScrollTrigger);
 
-    // Init Lenis
     const lenis = new Lenis({
-        duration: 1.2,
+        duration: 1.5,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: 'vertical',
         smoothWheel: true,
-        wheelMultiplier: 1.5,
+        wheelMultiplier: 1.0,
     });
-
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((time) => { lenis.raf(time * 1000); });
     gsap.ticker.lagSmoothing(0);
 
-    // 2. CUSTOM CURSOR & MAGNETIC HOVER
+    // 2. CURSOR MAGNETISM
     const cursor = document.getElementById('custom-cursor');
-    const interactives = document.querySelectorAll('.interactive, .interactive-trigger');
-
     window.addEventListener('mousemove', (e) => {
-        gsap.to(cursor, {
-            x: e.clientX,
-            y: e.clientY,
-            duration: 0.1,
-            ease: "power2.out"
-        });
+        gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1, ease: 'power2.out' });
     });
 
-    interactives.forEach(el => {
-        el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
-        el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
-    });
-
-    // 3. THREE.JS PROCEDURAL BACKGROUND
+    // 3. THREE.JS PROCEDURAL SCENE SETUP
     const canvas = document.getElementById('webgl-canvas');
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#e8e9eb'); // Start color matches CSS
-    
+    scene.background = new THREE.Color('#e8e9eb'); // Phase 1 off-white concrete
+    scene.fog = new THREE.Fog('#e8e9eb', 20, 100);
+
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 20;
+    // Phase 1 Camera starts structurally high aiming slightly down
+    camera.position.set(0, 30, 40);
+    camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Simple procedural architecture (Abstract)
-    const group = new THREE.Group();
-    scene.add(group);
-
-    // Concrete Pillar
-    const concreteGeo = new THREE.BoxGeometry(4, 15, 4);
-    const concreteMat = new THREE.MeshLambertMaterial({ color: 0x999999, roughness: 0.9 });
-    const pillar1 = new THREE.Mesh(concreteGeo, concreteMat);
-    pillar1.position.set(-2, 0, -5);
-    group.add(pillar1);
-
-    // Steel Beam
-    const steelGeo = new THREE.BoxGeometry(18, 1, 2);
-    const steelMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.8, roughness: 0.3 });
-    const beam1 = new THREE.Mesh(steelGeo, steelMat);
-    beam1.rotation.z = Math.PI / 6;
-    beam1.position.set(0, 2, 2);
-    group.add(beam1);
-
     // Lighting
-    const light = new THREE.DirectionalLight(0xffffff, 1.5);
-    light.position.set(10, 20, 10);
-    scene.add(light);
-    const ambientLight = new THREE.AmbientLight(0x404040, 2);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    dirLight.position.set(10, 20, 10);
+    scene.add(dirLight);
+    
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
-    // Mouse tilt tracking
-    let targetRotationX = 0;
-    let targetRotationY = 0;
-    window.addEventListener('mousemove', (e) => {
-        targetRotationY = (e.clientX - window.innerWidth / 2) * 0.0005;
-        targetRotationX = (e.clientY - window.innerHeight / 2) * 0.0005;
+    // Dynamic Etching Laser Light (Initially hidden/low intensity)
+    const laserLight = new THREE.PointLight(0xff5e00, 0, 50); // safety orange
+    laserLight.position.set(-20, -10, 5);
+    scene.add(laserLight);
+
+    // Generate Concrete Shards Array (The Wall that shatters)
+    const shardsGroup = new THREE.Group();
+    scene.add(shardsGroup);
+    
+    // Low-poly Dodecahedrons for geometric concrete aesthetic
+    const shardGeo = new THREE.DodecahedronGeometry();
+    const shardMat = new THREE.MeshLambertMaterial({ color: 0xcccccc, roughness: 1.0 });
+
+    for (let i = 0; i < 80; i++) {
+        const shard = new THREE.Mesh(shardGeo, shardMat);
+        // Position them flat along the X/Z plane (mimicking a floor or wall we are looking down at)
+        shard.position.set(
+            (Math.random() - 0.5) * 60,
+            (Math.random() - 0.5) * 5, // Tight Y spread initially
+            (Math.random() - 0.5) * 60
+        );
+        const scale = 0.5 + Math.random() * 2;
+        shard.scale.set(scale, scale, scale);
+        // Random base rotations
+        shard.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+        // Custom properties for Phase 2 explosion math
+        shard.userData = {
+            targetY: 20 + Math.random() * 80, // Shoot wildly up into vacuum
+            rotSpeedX: (Math.random() - 0.5) * 0.1,
+            rotSpeedY: (Math.random() - 0.5) * 0.1,
+        };
+        shardsGroup.add(shard);
+    }
+
+    // Generate The Shield I-Beams (Assembly Phase)
+    const AssemblyGroup = new THREE.Group();
+    scene.add(AssemblyGroup);
+    
+    const beamMat = new THREE.MeshStandardMaterial({ 
+        color: 0xff5e00, // Safety orange
+        roughness: 0.3, 
+        metalness: 0.8 
     });
 
-    const clock = new THREE.Clock();
-    function animateThree() {
-        requestAnimationFrame(animateThree);
-        // Idle continuous Y
-        group.rotation.y += 0.002;
-        // Mouse tilt interpolation
-        scene.rotation.x += (targetRotationX - scene.rotation.x) * 0.05;
-        scene.rotation.y += (targetRotationY - scene.rotation.y) * 0.05;
+    // Create 3 geometric beam blocks off-screen that will lock together
+    // Left Beam
+    const beamL = new THREE.Mesh(new THREE.BoxGeometry(2, 15, 2), beamMat);
+    beamL.position.set(-50, -20, -20); // Start deep offscreen
+    beamL.rotation.z = Math.PI / 4;
+    AssemblyGroup.add(beamL);
+    
+    // Right Beam
+    const beamR = new THREE.Mesh(new THREE.BoxGeometry(2, 15, 2), beamMat);
+    beamR.position.set(50, -20, -20);
+    beamR.rotation.z = -Math.PI / 4;
+    AssemblyGroup.add(beamR);
+
+    // Center Core Block
+    const beamC = new THREE.Mesh(new THREE.BoxGeometry(8, 4, 2), beamMat);
+    beamC.position.set(0, 40, 10); // Start top offscreen
+    AssemblyGroup.add(beamC);
+
+
+    // Render Loop
+    let timelineProgress = 0;
+    function animate() {
+        requestAnimationFrame(animate);
+        
+        // Continuous idle rotation for shards *only* when they've exploded
+        // We'll manage standard rotation below via GSAP updates or simple tick
+        shardsGroup.children.forEach(shard => {
+            shard.rotation.x += shard.userData.rotSpeedX * timelineProgress; // Spin faster the further along we are
+            shard.rotation.y += shard.userData.rotSpeedY * timelineProgress;
+        });
+
+        // Hover tilt effect (The entire scene responds lightly to mouse)
+        scene.rotation.y = (mouseX / window.innerWidth - 0.5) * 0.1;
+        scene.rotation.x = (mouseY / window.innerHeight - 0.5) * 0.1;
+
         renderer.render(scene, camera);
     }
-    animateThree();
+    
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+    animate();
 
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
@@ -97,116 +135,107 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // 4. GSAP SCROLL TIMELINES
+    // 4. GSAP TIMELINES: The 4 Cinematic Phases
 
-    // Helper: Manual SVG blur interpolation
-    const blurObj = { val: 0 };
-    const blurFilter = document.querySelector('#blur-filter');
-    const updateBlur = () => { blurFilter.setAttribute('stdDeviation', `${blurObj.val},0`); };
-
-    // --- Scene 1->2 Scrubbed Split & Background Transition ---
-    const tlSplit = gsap.timeline({
+    const tl = gsap.timeline({
         scrollTrigger: {
-            trigger: ".section-hero",
+            trigger: ".scroll-pin-container",
             start: "top top",
-            endTrigger: ".section-kinetic-spacer",
-            end: "bottom center",
-            scrub: true,
-            pin: ".section-hero",
-            anticipatePin: 1
-        }
-    });
-
-    // Color Transitions (DOM + WebGL)
-    const slateHex = 0x2d3748;
-    tlSplit.to(scene.background, {
-        r: new THREE.Color(slateHex).r,
-        g: new THREE.Color(slateHex).g,
-        b: new THREE.Color(slateHex).b,
-        duration: 1
-    }, 0);
-    tlSplit.to('.top-bar, .rest-of-name', { color: '#f7fafc', duration: 1 }, 0); // Interface flips to light text
-
-    // Text Split Translations (Top 1.5x speed, Bottom 0.8x drop)
-    tlSplit.to('.slice-top', { yPercent: -150, xPercent: 10, duration: 1 }, 0);
-    tlSplit.to('.slice-bottom', { yPercent: 80, xPercent: -5, duration: 1 }, 0);
-    
-    // SVG Motion Blur Peak during mid-scroll
-    tlSplit.to(blurObj, { val: 15, onUpdate: updateBlur, duration: 0.5 }, 0);
-    tlSplit.to(blurObj, { val: 0, onUpdate: updateBlur, duration: 0.5 }, 0.5); // Fades back out
-
-    // 3D Object manipulation
-    tlSplit.to(group.position, { x: -8, y: 5, z: -10, duration: 1 }, 0);
-    tlSplit.to(group.scale, { x: 0.4, y: 0.4, z: 0.4, duration: 1 }, 0);
-
-
-    // --- Scene 3 Enter: Kavach Masking Reveal ---
-    gsap.set('.kavach-title', { y: '110%' });
-    const tlKavach = gsap.timeline({
-        scrollTrigger: {
-            trigger: ".section-kavach",
-            start: "top center",
-            toggleActions: "play none none reverse"
-        }
-    });
-    
-    // Slide up masking effect
-    tlKavach.to('.kavach-title', {
-        y: '0%',
-        duration: 1,
-        stagger: 0.15,
-        ease: "power4.out"
-    });
-
-    // Custom Vanilla Typewriter/Decoder Effect
-    const subtitleE = document.querySelector('.decoding-text');
-    const subtitleFinal = "EQUIPMENT LEASING | MATERIAL SUPPLY | AHMEDABAD";
-    const decodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ*&%$#@!<>";
-    
-    tlKavach.add(() => {
-        let iteration = 0;
-        let decodeInterval = setInterval(() => {
-            subtitleE.innerText = subtitleFinal.split('').map((letter, index) => {
-                if(index < iteration) { return subtitleFinal[index]; }
-                return decodeChars[Math.floor(Math.random() * decodeChars.length)];
-            }).join('');
-            if(iteration >= subtitleFinal.length) clearInterval(decodeInterval);
-            iteration += 1 / 2;
-        }, 30);
-    });
-
-    // --- Scene 4: Blueprint Reveal ---
-    const kawachSubtitle = document.querySelector('.kavach-subtitle');
-    const blueprintOverlay = document.querySelector('.blueprint-overlay');
-    kawachSubtitle.addEventListener('mouseenter', () => {
-        blueprintOverlay.style.opacity = '1';
-        // Simulating WebGL Distortion Peel by transitioning the background scene color heavily dark
-        gsap.to(scene.background, { r: 0.05, g: 0.05, b: 0.1, duration: 0.5 });
-    });
-    kawachSubtitle.addEventListener('mouseleave', () => {
-        blueprintOverlay.style.opacity = '0';
-        gsap.to(scene.background, { r: new THREE.Color(slateHex).r, g: new THREE.Color(slateHex).g, b: new THREE.Color(slateHex).b, duration: 0.5 });
-    });
-
-    // Nodes Click
-    document.querySelectorAll('.node').forEach(node => {
-        node.addEventListener('click', () => {
-            const card = document.querySelector('.data-card');
-            const content = document.querySelector('.data-card .data-content');
-            content.innerText = node.getAttribute('data-info');
-            card.classList.add('active');
-            setTimeout(() => card.classList.remove('active'), 3000);
-        });
-    });
-
-    // --- Scene 5: Cultural Anchor ---
-    gsap.to('.translation-fade', {
-        opacity: 1,
-        scrollTrigger: {
-            trigger: ".cultural-anchor",
-            start: "top 90%",
+            endTrigger: ".cinematic-spacer",
             end: "bottom bottom",
-            scrub: true
+            scrub: 1.5,
+            pin: true,
+            onUpdate: self => { timelineProgress = self.progress; }
         }
     });
+
+    // === PHASE 1: The Descent (0% - 20%) ===
+    // Bring in Hero text
+    tl.to('.massive-hero-text', { opacity: 1, duration: 0.05 }, 0);
+    
+    // Camera literally pushes straight down Y axis, breaking through the theoretical concrete shell
+    tl.to(camera.position, {
+        y: 10,  // Drop low
+        z: 30,  // Push slightly in
+        ease: 'power2.inOut',
+        duration: 0.2
+    }, 0);
+    
+    // Focus lookAt slightly upwards now
+    tl.to(camera.lookAt, { x:0, y:10, z:0, duration: 0.2 }, 0);
+
+
+    // === PHASE 2: The Anti-Gravity Event (20% - 50%) ===
+    // Erase hero text
+    tl.to('.massive-hero-text', { opacity: 0, scale: 1.1, duration: 0.1 }, 0.2);
+    
+    // Background flashes to void
+    const obsidianHex = 0x0d1217;
+    tl.to(scene.background, {
+        r: new THREE.Color(obsidianHex).r,
+        g: new THREE.Color(obsidianHex).g,
+        b: new THREE.Color(obsidianHex).b,
+        duration: 0.1
+    }, 0.2);
+    tl.to(scene.fog, { color: obsidianHex, duration: 0.1 }, 0.2);
+
+    // Fire all shards upwards violently into the vacuum
+    shardsGroup.children.forEach(shard => {
+        tl.to(shard.position, {
+            y: shard.position.y + shard.userData.targetY, // Blast upwards
+            x: shard.position.x * 1.5, // Spread out x
+            z: shard.position.z * 1.5, // Spread out z
+            ease: "power4.out",
+            duration: 0.3
+        }, 0.2);
+    });
+
+
+    // === PHASE 3: The Assembly (50% - 75%) ===
+    // The Beams fly in and magnetically lock
+    tl.to(beamL.position, { x: -4, y: 0, z: 0, duration: 0.25, ease: "back.out(1.5)" }, 0.5);
+    tl.to(beamR.position, { x: 4, y: 0, z: 0, duration: 0.25, ease: "back.out(1.5)" }, 0.5);
+    tl.to(beamL.rotation, { z: 0, duration: 0.25, ease: "power2.inOut" }, 0.5);
+    tl.to(beamR.rotation, { z: 0, duration: 0.25, ease: "power2.inOut" }, 0.5);
+    
+    tl.to(beamC.position, { x: 0, y: 6, z: 0, duration: 0.25, ease: "bounce.out" }, 0.55);
+
+    // KAVACH title fades in perfectly behind the assembled shield structure
+    tl.to('.kavach-shield-title', {
+        opacity: 1,
+        scale: 1,
+        duration: 0.2,
+        ease: "power2.out"
+    }, 0.6);
+
+
+    // === PHASE 4: The Anchor Laser (75% - 100%) ===
+    // Fade Kavach shield back slightly
+    tl.to('.kavach-shield-title', { opacity: 0.2, duration: 0.1 }, 0.8);
+    tl.to(AssemblyGroup.position, { y: 15, duration: 0.2, ease: "power2.inOut" }, 0.8);
+
+    // Reveal Anchor text wrapper DOM
+    tl.to('.sanskrit-engraved', { opacity: 1, duration: 0.01 }, 0.8);
+
+    // Ignite the PointLight Laser
+    tl.to(laserLight, { intensity: 15, duration: 0.05 }, 0.8);
+
+    // Sweep laser light geometrically from Left to Right
+    tl.to(laserLight.position, {
+        x: 20, // Sweep past 0
+        ease: "none",
+        duration: 0.2
+    }, 0.8);
+
+    // Synchronize CSS clip-path to visually 'etch/reveal' the text as the laser passes it!
+    tl.to('.sanskrit-engraved', {
+        clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+        ease: "none",
+        duration: 0.2
+    }, 0.8);
+
+    // After laser scan, kill laser light, fade in translation text under it safely
+    tl.to(laserLight, { intensity: 0, duration: 0.05 }, 1.0);
+    tl.to('.translation-fade', { opacity: 1, duration: 0.1 }, 0.95);
+
 });
